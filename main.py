@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, url_for, flash, abort, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -12,7 +14,8 @@ from functools import wraps
 # from flask_gravatar import Gravatar
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY')
+
 bootstrap = Bootstrap5(app)
 #Initialization ckeditor
 ckeditor = CKEditor(app)
@@ -32,7 +35,8 @@ class Base(DeclarativeBase):
 #Initialize the Extension
 db = SQLAlchemy(model_class=Base)
 #Configure the Extension
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///post.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URI", "sqlite:///posts.db")
+
 db.init_app(app)
 #Defining Models
 class User(UserMixin, db.Model):
@@ -222,4 +226,4 @@ def contact():
     return render_template("contact.html", current_user=current_user)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
